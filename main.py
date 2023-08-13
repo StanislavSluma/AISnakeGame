@@ -2,12 +2,21 @@ import pygame
 
 pygame.init()
 
-width = 1000
-height = 500
+width = 992
+height = 496
 screen = pygame.display.set_mode((width, height))
+
 running = True
 
+
+def bg():
+    bg = pygame.image.load('resources/snakeBg.png').convert_alpha()
+    screen.blit(bg, (0, 0))
+
+
 if __name__ == '__main__':
+    bg()
+    pygame.display.update()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
