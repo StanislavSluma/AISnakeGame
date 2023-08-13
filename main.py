@@ -3,7 +3,7 @@ from tiles import *
 from config import *
 
 pygame.init()
-pygame.mixer.music.load('resources/laxity-crosswords-by-seraphic-music.mp3')
+pygame.mixer.music.load('resources/sounds/laxity-crosswords-by-seraphic-music.mp3')
 pygame.mixer.music.play(-1)
 
 '''
@@ -29,7 +29,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
     def bg(self):
-        background = pygame.image.load('resources/snakeBg.png').convert_alpha()
+        background = pygame.image.load('resources/level_design/snakeBg.png').convert_alpha()
         screen.blit(background, (0, 0))
         self.__place_food()
 
@@ -87,7 +87,7 @@ class Game:
             self.food_x = random.randint(0, 61)
             self.food_y = random.randint(0, 30)
             self.food = True
-        apple = pygame.image.load('resources/apple.png')
+        apple = pygame.image.load('resources/snake/apple.png')
         fruit_rect = pygame.Rect(int(self.food_x * tile_size), int(self.food_y * tile_size), tile_size, tile_size)
         screen.blit(apple, fruit_rect)
 
