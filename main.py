@@ -1,10 +1,14 @@
 import random
+
+import pygame
+
 from tiles import *
 from config import *
 
 pygame.init()
-pygame.mixer.music.load('resources/sounds/laxity-crosswords-by-seraphic-music.mp3')
-pygame.mixer.music.play(-1)
+pygame.mixer.music.load('resources/sounds/mixkit-game-level-music-689.wav')
+pygame.mixer.music.load('resources/sounds/mixkit-game-ball-tap-2073.wav', 'ate')
+pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-game-level-music-689.wav'))
 
 '''
 class Snake:
@@ -34,6 +38,7 @@ class Game:
         self.__place_food()
 
     def event_listener(self):
+        old_direction = ''
         for event in pygame.event.get():
             old_direction = self.__direction
             if event.type == pygame.QUIT:
@@ -56,18 +61,23 @@ class Game:
                     self.__direction = "right"
                     if old_direction != self.__direction:
                         self.__event = True
+
         self.move(self.__direction)
+        self.__check_for_food()
+        self.draw_snake()
+        self.clock.tick(self.__speed)
+        pygame.display.update()
+
+    def __check_for_food(self):
         if self.__x == self.food_x * tile_size and self.__y == self.food_y * tile_size:
             self.food = False
             self.__score += 1
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound('resources/sounds/mixkit-game-ball-tap-2073.wav'))
             pygame.display.set_caption(f"Snake game Score : {self.__score}")
             if self.__score > 10:
                 self.__speed += 1
             self.__snake_body.append(self.__snake_body[-1])
             print(self.__score)
-        self.draw_snake()
-        self.clock.tick(self.__speed)
-        pygame.display.update()
 
     def move(self, direction):
         if direction == "up":
@@ -143,6 +153,7 @@ if __name__ == '__main__':
     # print(tile_map)
     game = Game()
     pygame.display.update()
+    global running
     while running:
         game.event_listener()
 
