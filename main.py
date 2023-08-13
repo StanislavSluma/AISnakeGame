@@ -16,6 +16,7 @@ def bg():
     background = pygame.image.load('resources/snakeBg.png').convert_alpha()
     screen.blit(background, (0, 0))
 
+
 class Game:
     def __init__(self):
         self.__x = width/2

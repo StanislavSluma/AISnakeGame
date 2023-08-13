@@ -8,7 +8,6 @@ class TileSet:
 class TileMap:
     def __init__(self):
         pass
-        pass
 
     def read_csv(self, filename):
         tile_map = []
