@@ -10,8 +10,8 @@ running = True
 
 
 def bg():
-    bg = pygame.image.load('resources/snakeBg.png').convert_alpha()
-    screen.blit(bg, (0, 0))
+    background = pygame.image.load('resources/snakeBg.png').convert_alpha()
+    screen.blit(background, (0, 0))
 
 
 if __name__ == '__main__':
