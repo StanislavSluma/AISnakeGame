@@ -16,7 +16,7 @@ class TileMap:
             reader = csv.reader(file, delimiter=',')
             for row in reader:
                 tile_map.append(list(row))
-                print(list(row))
+                # print(list(row))
         return tile_map
 
     def draw_map(self, surface):
