@@ -14,9 +14,8 @@ running = True
 Point = namedtuple('Point', 'x, y')
 
 def bg():
-    bg_image = pygame.image.load('resources/snakeBg.png').convert_alpha()
-    screen.blit(bg_image, (0, 0))
-
+    background = pygame.image.load('resources/snakeBg.png').convert_alpha()
+    screen.blit(background, (0, 0))
 
 class Game:
     def __init__(self):
