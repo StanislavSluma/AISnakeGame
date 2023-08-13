@@ -139,7 +139,7 @@ class Game:
 
 if __name__ == '__main__':
     tm = TileMap()
-    tile_map = tm.read_csv('resources/snakeLevel.csv')
+    tile_map = tm.read_csv('resources/level_design/snakeLevel.csv')
     # print(tile_map)
     game = Game()
     pygame.display.update()
