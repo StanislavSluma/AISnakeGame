@@ -13,8 +13,8 @@ pygame.display.set_caption("Snake game")
 running = True
 Point = namedtuple('Point', 'x, y')
 
+background = pygame.image.load('resources/snakeBg.png').convert_alpha()
 def bg():
-    background = pygame.image.load('resources/snakeBg.png').convert_alpha()
     screen.blit(background, (0, 0))
 
 class Game:
@@ -22,8 +22,8 @@ class Game:
         bg()
         self.__x = width/2
         self.__y = height/2
-        self.__speed = tile_size*1
-        self.__direction = ""
+        self.__speed = 8
+        self.__direction = "up"
         self.__score = 0
         self.__place_food()
         self.clock = pygame.time.Clock()
@@ -43,17 +43,16 @@ class Game:
                 elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                     self.__direction = "right"
 
-            self.move(self.__direction)
-            self.draw_snake()
-            #self.clock.tick(30)
-            pygame.display.update()
-
+        self.move(self.__direction)
+        self.draw_snake()
+        self.clock.tick(self.__speed)
+        pygame.display.update()
 
     def move(self, direction):
         if direction == "up":
-            self.__y += tile_size
-        elif direction == "down":
             self.__y -= tile_size
+        elif direction == "down":
+            self.__y += tile_size
         elif direction == "left":
             self.__x -= tile_size
         elif direction == "right":
@@ -72,8 +71,9 @@ class Game:
         fruit_rect = pygame.Rect(int(__pos.x * tile_size), int(__pos.y * tile_size), tile_size, tile_size)
         screen.blit(apple, fruit_rect)
 
-    def draw_snake(self, direction, speed):
-        head_rect = pygame.Rect(100, 100, tile_size, tile_size)
+    def draw_snake(self):
+        bg()
+        head_rect = pygame.Rect(self.__x, self.__y, tile_size, tile_size)
         pygame.draw.rect(screen, (255, 0, 0), head_rect)
 
 
