@@ -39,7 +39,6 @@ class Game:
         self.__place_food()
 
     def event_listener(self):
-        old_direction = ''
         for event in pygame.event.get():
             old_direction = self.__direction
             if event.type == pygame.QUIT:
@@ -117,42 +116,42 @@ class Game:
             new_body[1:] = self.__snake_body[0:-1]
             self.__snake_body = new_body
 
-        global snake_head, snake_body, snake_tail
+        global snake_head, snake_body, snake_tail, now_snake_head, now_snake_body, now_snake_tail
         if self.__event and self.__direction == 'right':
             print(self.__event)
-            snake_head = pygame.transform.rotate(snake_head, 270)
-            snake_body = pygame.transform.rotate(snake_body, 90)
-            snake_tail = pygame.transform.rotate(snake_tail, 270)
+            now_snake_head = pygame.transform.rotate(snake_head, 270)
+            now_snake_body = pygame.transform.rotate(snake_body, 90)
+            now_snake_tail = pygame.transform.rotate(snake_tail, 270)
             self.__event = False
         elif self.__event and self.__direction == 'left':
             print(self.__event)
-            snake_head = pygame.transform.rotate(snake_head, -270)
-            snake_body = pygame.transform.rotate(snake_body, 90)
-            snake_tail = pygame.transform.rotate(snake_tail, -270)
+            now_snake_head = pygame.transform.rotate(snake_head, -270)
+            now_snake_body = pygame.transform.rotate(snake_body, 90)
+            now_snake_tail = pygame.transform.rotate(snake_tail, -270)
             self.__event = False
         elif self.__event and self.__direction == 'up':
             print(self.__event)
-            snake_head = pygame.transform.rotate(snake_head, 90)
-            snake_body = pygame.transform.rotate(snake_body, -90)
-            snake_tail = pygame.transform.rotate(snake_tail, 90)
+            now_snake_head = pygame.transform.rotate(snake_head, 0)
+            now_snake_body = pygame.transform.rotate(snake_body, 0)
+            now_snake_tail = pygame.transform.rotate(snake_tail, 0)
             self.__event = False
         elif self.__event and self.__direction == 'down':
             print(self.__event)
-            snake_head = pygame.transform.rotate(snake_head, -90)
-            snake_body = pygame.transform.rotate(snake_body, 90)
-            snake_tail = pygame.transform.rotate(snake_tail, -90)
+            now_snake_head = pygame.transform.rotate(snake_head, 180)
+            now_snake_body = pygame.transform.rotate(snake_body, 0)
+            now_snake_tail = pygame.transform.rotate(snake_tail, 180)
             self.__event = False
 
         head_rect = pygame.Rect(self.__snake_body[0][0], self.__snake_body[0][1], tile_size, tile_size)
-        screen.blit(snake_head, head_rect)
+        screen.blit(now_snake_head, head_rect)
 
         for point in self.__snake_body[1:-1]:
             body_rect = pygame.Rect(point[0], point[1], tile_size, tile_size)
             pygame.draw.rect(screen, (255, 0, 0), body_rect)
-            screen.blit(snake_body, body_rect)
+            screen.blit(now_snake_body, body_rect)
 
         tail_rect = pygame.Rect(self.__snake_body[-1][0], self.__snake_body[-1][1], tile_size, tile_size)
-        screen.blit(snake_tail, tail_rect)
+        screen.blit(now_snake_tail, tail_rect)
 
     def game_over(self):
         screen.fill(pygame.Color('black'))

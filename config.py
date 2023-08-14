@@ -15,3 +15,6 @@ running = True
 snake_head = pygame.image.load('resources/snake/snake_head.png')
 snake_body = pygame.image.load('resources/snake/snake_body.png')
 snake_tail = pygame.image.load('resources/snake/snake_tail.png')
+now_snake_head = pygame.image.load('resources/snake/snake_head.png')
+now_snake_body = pygame.image.load('resources/snake/snake_body.png')
+now_snake_tail = pygame.image.load('resources/snake/snake_tail.png')
