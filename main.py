@@ -8,15 +8,19 @@ from config import *
 
 pygame.init()
 pygame.mixer.music.load('resources/sounds/mixkit-game-level-music-689.wav')
-pygame.mixer.music.load('resources/sounds/mixkit-game-ball-tap-2073.wav', 'ate')
+pygame.mixer.music.load('resources/sounds/laxity-crosswords-by-seraphic-music.mp3')
+pygame.mixer.music.load('resources/sounds/mixkit-game-ball-tap-2073.wav')
+pygame.mixer.music.load('resources/sounds/mixkit-player-losing-or-failing-2042.wav')
 pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-game-level-music-689.wav'), -1)
-
+# pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/laxity-crosswords-by-seraphic-music.mp3'), -1)
 
 class Game:
     def __init__(self):
         self.__x = width/2
         self.__y = height/2 + 8
-        self.__snake_body = [(width / 2, height / 2 + 8, 0), (width / 2, height / 2 + 24, 0), (width / 2, height / 2 + 40, 0)]
+        self.__snake_body = [
+            (width / 2, height / 2 + 8, 0), (width / 2, height / 2 + 24, 0), (width / 2, height / 2 + 40, 0)
+        ]
         self.__speed = 8
         self.__direction = "up"
         self.__score = 0
@@ -70,8 +74,7 @@ class Game:
             self.__score += 1
             pygame.mixer.Channel(1).play(pygame.mixer.Sound('resources/sounds/mixkit-game-ball-tap-2073.wav'))
             pygame.display.set_caption(f"Snake game Score : {self.__score}")
-            if self.__score > 10:
-                self.__speed += 1
+            self.__speed = 8 + self.__score // 10
             self.__snake_body.append(self.__snake_body[-1])
             print(self.__score)
 
@@ -98,10 +101,10 @@ class Game:
                 self.__x += tile_size
 
     def __is_collision(self):
-        head = Point(self.__x, self.__y)
-        if head in self.__snake_body[1:]:
-            return True
-
+        head = (self.__x, self.__y)
+        for body in self.__snake_body[1:]:
+            if head == (body[0], body[1]):
+                return True
         return False
 
     def __place_food(self):
@@ -142,12 +145,13 @@ class Game:
         screen.blit(pygame.transform.rotate(snake_tail, self.__snake_body[-1][2]), tail_rect)
 
     def game_over(self):
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-player-losing-or-failing-2042.wav'), -1)
         screen.fill(pygame.Color('black'))
         font = pygame.font.SysFont('chalkduster.ttf', 72)
         game_over = 'GAME OVER'
         score = f'YOUR SCORE {self.__score}'
-        text1 = font.render(game_over, True, pygame.Color('white'))
-        text2 = font.render(score, True, pygame.Color('white'))
+        text1 = font.render(game_over, True, pygame.Color('red'))
+        text2 = font.render(score, True, pygame.Color('green'))
         screen.blit(text1, (width/2 - 200, height/2 - 100))
         screen.blit(text2, (width/2 - 200, height/2))
         pygame.display.update()
@@ -165,5 +169,5 @@ if __name__ == '__main__':
             game.game_over()
             break
 
-    time.sleep(5)
+    time.sleep(2.8)
     pygame.quit()
