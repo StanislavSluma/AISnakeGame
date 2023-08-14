@@ -1,4 +1,7 @@
 import random
+import time
+
+import pygame.font
 
 from tiles import *
 from config import *
@@ -55,9 +58,11 @@ class Game:
 
         self.move(self.__direction)
         self.__check_for_food()
+        game_over = self.__is_collision()
         self.draw_snake()
         self.clock.tick(self.__speed)
         pygame.display.update()
+        return self.__score, game_over
 
     def __check_for_food(self):
         if self.__x == self.food_x * tile_size and self.__y == self.food_y * tile_size:
@@ -92,8 +97,12 @@ class Game:
             else:
                 self.__x += tile_size
 
-    def is_collision(self):
-        pass
+    def __is_collision(self):
+        head = Point(self.__x, self.__y)
+        if head in self.__snake_body[1:]:
+            return True
+
+        return False
 
     def __place_food(self):
         if not self.food:
@@ -132,14 +141,29 @@ class Game:
         tail_rect = pygame.Rect(self.__snake_body[-1][0], self.__snake_body[-1][1], tile_size, tile_size)
         screen.blit(pygame.transform.rotate(snake_tail, self.__snake_body[-1][2]), tail_rect)
 
+    def game_over(self):
+        screen.fill(pygame.Color('black'))
+        font = pygame.font.SysFont('chalkduster.ttf', 72)
+        game_over = 'GAME OVER'
+        score = f'YOUR SCORE {self.__score}'
+        text1 = font.render(game_over, True, pygame.Color('white'))
+        text2 = font.render(score, True, pygame.Color('white'))
+        screen.blit(text1, (width/2 - 200, height/2 - 100))
+        screen.blit(text2, (width/2 - 200, height/2))
+        pygame.display.update()
+
 
 if __name__ == '__main__':
     tm = TileMap()
     tile_map = tm.read_csv('resources/level_design/snakeLevel.csv')
-    # print(tile_map)
     game = Game()
     pygame.display.update()
     global running
     while running:
-        game.event_listener()
+        score, is_over = game.event_listener()
+        if is_over:
+            game.game_over()
+            break
+
+    time.sleep(5)
     pygame.quit()
