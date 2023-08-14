@@ -8,18 +8,12 @@ pygame.mixer.music.load('resources/sounds/mixkit-game-level-music-689.wav')
 pygame.mixer.music.load('resources/sounds/mixkit-game-ball-tap-2073.wav', 'ate')
 pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-game-level-music-689.wav'), -1)
 
-'''
-class Snake:
-    def __init__(self):
-        self.__snake_body = [(width/2, height/2 + 8), (width/2, height/2 + 24), (width/2, height/2 + 40)]
-'''
-
 
 class Game:
     def __init__(self):
         self.__x = width/2
         self.__y = height/2 + 8
-        self.__snake_body = [(width / 2, height / 2 + 8), (width / 2, height / 2 + 24), (width / 2, height / 2 + 40)]
+        self.__snake_body = [(width / 2, height / 2 + 8, 0), (width / 2, height / 2 + 24, 0), (width / 2, height / 2 + 40, 0)]
         self.__speed = 8
         self.__direction = "up"
         self.__score = 0
@@ -42,19 +36,19 @@ class Game:
                 global running
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w or event.key == pygame.K_UP:
+                if event.key == pygame.K_w or event.key == pygame.K_UP and old_direction != 'down':
                     self.__direction = "up"
                     if old_direction != self.__direction:
                         self.__event = True
-                elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                elif event.key == pygame.K_s or event.key == pygame.K_DOWN and old_direction != 'up':
                     self.__direction = "down"
                     if old_direction != self.__direction:
                         self.__event = True
-                elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_a or event.key == pygame.K_LEFT and old_direction != 'right':
                     self.__direction = "left"
                     if old_direction != self.__direction:
                         self.__event = True
-                elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_d or event.key == pygame.K_RIGHT and old_direction != 'left':
                     self.__direction = "right"
                     if old_direction != self.__direction:
                         self.__event = True
@@ -78,13 +72,25 @@ class Game:
 
     def move(self, direction):
         if direction == "up":
-            self.__y -= tile_size
+            if self.__y == 0:
+                self.__y = height - 16
+            else:
+                self.__y -= tile_size
         elif direction == "down":
-            self.__y += tile_size
+            if self.__y == height - 16:
+                self.__y = 0
+            else:
+                self.__y += tile_size
         elif direction == "left":
-            self.__x -= tile_size
+            if self.__x == 0:
+                self.__x = width - 16
+            else:
+                self.__x -= tile_size
         elif direction == "right":
-            self.__x += tile_size
+            if self.__x == width - 16:
+                self.__x = 0
+            else:
+                self.__x += tile_size
 
     def is_collision(self):
         pass
@@ -102,46 +108,29 @@ class Game:
         self.bg()
         if self.__direction != '':
             new_body = list.copy(self.__snake_body)
-            new_body[0] = (self.__x, self.__y)
+            rotate = 0
+            if self.__direction == 'up':
+                rotate = 0
+            elif self.__direction == 'down':
+                rotate = 180
+            elif self.__direction == 'right':
+                rotate = 270
+            elif self.__direction == 'left':
+                rotate = 90
+            new_body[0] = (self.__x, self.__y, rotate)
             new_body[1:] = self.__snake_body[0:-1]
             self.__snake_body = new_body
 
-        global snake_head, snake_body, snake_tail, now_snake_head, now_snake_body, now_snake_tail
-        if self.__event and self.__direction == 'right':
-            print(self.__event)
-            now_snake_head = pygame.transform.rotate(snake_head, 270)
-            now_snake_body = pygame.transform.rotate(snake_body, 90)
-            now_snake_tail = pygame.transform.rotate(snake_tail, 270)
-            self.__event = False
-        elif self.__event and self.__direction == 'left':
-            print(self.__event)
-            now_snake_head = pygame.transform.rotate(snake_head, -270)
-            now_snake_body = pygame.transform.rotate(snake_body, 90)
-            now_snake_tail = pygame.transform.rotate(snake_tail, -270)
-            self.__event = False
-        elif self.__event and self.__direction == 'up':
-            print(self.__event)
-            now_snake_head = pygame.transform.rotate(snake_head, 0)
-            now_snake_body = pygame.transform.rotate(snake_body, 0)
-            now_snake_tail = pygame.transform.rotate(snake_tail, 0)
-            self.__event = False
-        elif self.__event and self.__direction == 'down':
-            print(self.__event)
-            now_snake_head = pygame.transform.rotate(snake_head, 180)
-            now_snake_body = pygame.transform.rotate(snake_body, 0)
-            now_snake_tail = pygame.transform.rotate(snake_tail, 180)
-            self.__event = False
-
         head_rect = pygame.Rect(self.__snake_body[0][0], self.__snake_body[0][1], tile_size, tile_size)
-        screen.blit(now_snake_head, head_rect)
+        screen.blit(pygame.transform.rotate(snake_head, self.__snake_body[0][2]), head_rect)
 
-        for point in self.__snake_body[1:-1]:
-            body_rect = pygame.Rect(point[0], point[1], tile_size, tile_size)
+        for body in self.__snake_body[1:-1]:
+            body_rect = pygame.Rect(body[0], body[1], tile_size, tile_size)
             pygame.draw.rect(screen, (255, 0, 0), body_rect)
-            screen.blit(now_snake_body, body_rect)
+            screen.blit(pygame.transform.rotate(snake_body, body[2]), body_rect)
 
         tail_rect = pygame.Rect(self.__snake_body[-1][0], self.__snake_body[-1][1], tile_size, tile_size)
-        screen.blit(now_snake_tail, tail_rect)
+        screen.blit(pygame.transform.rotate(snake_tail, self.__snake_body[-1][2]), tail_rect)
 
 
 if __name__ == '__main__':
@@ -153,5 +142,4 @@ if __name__ == '__main__':
     global running
     while running:
         game.event_listener()
-
     pygame.quit()
