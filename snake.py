@@ -57,8 +57,7 @@ class Snake:
     def ate(self):
         self.__snake_body.append(self.__snake_body[-1])
 
-    def draw_snake(self, direction, bg):
-        bg()
+    def draw_snake(self, direction):
         if direction != '':
             new_body = list.copy(self.__snake_body)
             rotate = 0
