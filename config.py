@@ -4,6 +4,7 @@ tile_size = 16
 width = tile_size * 62
 height = tile_size * 31
 running = True
+game_over = False
 dict_keys_unkeys = {pygame.K_w: ["up", "down"], pygame.K_UP: ["up", "down"], pygame.K_s: ["down", "up"],
                     pygame.K_DOWN: ["down", "up"], pygame.K_a: ["left", "right"], pygame.K_LEFT: ["left", "right"],
                     pygame.K_d: ["right", "left"], pygame.K_RIGHT: ["right", "left"]}

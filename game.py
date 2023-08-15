@@ -8,6 +8,7 @@ import pygame.time
 from config import screen, dict_keys_unkeys, width, height
 from food import Food
 from snake import Snake
+from tiles import TileMap
 
 
 class Game:
@@ -18,13 +19,17 @@ class Game:
         pygame.mixer.music.load('resources/sounds/mixkit-game-ball-tap-2073.wav')
         pygame.mixer.music.load('resources/sounds/mixkit-player-losing-or-failing-2042.wav')
         pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-game-level-music-689.wav'), -1)
+        self.__tile_map = TileMap()
+        self.__tile_map.read_csv('resources/level_design/snakeLevel.csv')
+        self.__sur = pygame.Surface((width, height))
+        self.__tile_map.draw_map(self.__sur)
         self.bg()
         self.__snake = Snake()
         self.__food = Food()
         self.__score = 0
         self.__event = True
         self.clock = pygame.time.Clock()
-        self.__direction = ""
+        self.__direction = "up"
 
     def bg(self):
         background = pygame.image.load('resources/level_design/snakeBg.png')
@@ -44,11 +49,12 @@ class Game:
         self.__snake.move(self.__direction)
         self.__check_for_food()
         self.__snake.draw_snake(self.__direction, self.bg)
+        global game_over
         game_over = self.__snake.is_collision()
         self.__food.place_food()
         self.clock.tick(self.__snake.speed)
         pygame.display.update()
-        return self.__score, game_over
+        return game_over
 
     def __check_for_food(self):
         if self.__snake.get_place_head() == self.__food.get_food_point():
@@ -61,14 +67,29 @@ class Game:
 
     def game_over(self):
         pygame.mixer.Channel(0).play(
-            pygame.mixer.Sound('resources/sounds/mixkit-player-losing-or-failing-2042.wav'), -1
+            pygame.mixer.Sound('resources/sounds/mixkit-player-losing-or-failing-2042.wav')
         )
         screen.fill(pygame.Color('black'))
-        font = pygame.font.SysFont('chalkduster.ttf', 72)
-        game_over = 'GAME OVER'
+        font = pygame.font.Font('resources/fonts/8-BIT WONDER.TTF', 72)
+        game_over = '  GAME OVER'
         your_score = f'YOUR SCORE {self.__score}'
+        font2 = pygame.font.Font('resources/fonts/8-BIT WONDER.TTF', 22)
+        key_to_continue = 'PRESS C TO PLAY AGAIN OR Q TO EXIT'
         text1 = font.render(game_over, True, pygame.Color('red'))
         text2 = font.render(your_score, True, pygame.Color('green'))
-        screen.blit(text1, (width/2 - 200, height/2 - 100))
-        screen.blit(text2, (width/2 - 200, height/2))
+        text3 = font2.render(key_to_continue, True, pygame.Color('white'))
+        screen.blit(text1, (width/2 - 400, height/2 - 100))
+        screen.blit(text2, (width/2 - 400, height/2))
+        screen.blit(text3, (width/2 - 300, height/2 + 100))
         pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_c:
+                        return True
+                    elif event.key == pygame.K_q:
+                        return False
+
+    def game_menu(self):
+        pass
+
