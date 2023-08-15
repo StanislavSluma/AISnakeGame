@@ -7,7 +7,8 @@ from config import *
 
 if __name__ == '__main__':
     tm = TileMap()
-    tile_map = tm.read_csv('resources/level_design/snakeLevel.csv')
+    tm.read_csv('resources/level_design/snakeLevel.csv')
+    tm.draw_map(screen)
     game = Game()
     pygame.display.update()
     global running

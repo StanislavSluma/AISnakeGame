@@ -14,3 +14,10 @@ pygame.display.set_caption("Snake game Score : 0")
 snake_head = pygame.image.load('resources/snake/snake_head.png')
 snake_body = pygame.image.load('resources/snake/snake_body.png')
 snake_tail = pygame.image.load('resources/snake/snake_tail.png')
+
+tile285 = pygame.image.load('resources/level_design/tiles/285.png')
+tile305 = pygame.image.load('resources/level_design/tiles/305.png')
+tile326 = pygame.image.load('resources/level_design/tiles/326.png')
+tile329 = pygame.image.load('resources/level_design/tiles/329.png')
+
+tiles = {'285': tile285, '305': tile305, '326': tile326, '329': tile329}
