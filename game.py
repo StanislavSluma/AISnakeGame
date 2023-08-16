@@ -24,11 +24,13 @@ class Game:
         self.__sur = pygame.Surface((width, height))
         self._sur = self.__tile_map.draw_map(self.__sur)
         self.__snake = Snake()
-        self.__food = Food()
+        self.__food = [Food(), Food(), Food()]
+        for food in self.__food:
+            food.place_food(self.__tile_map.tile_coordinates)
         self.__score = 0
         self.__event = True
         self.clock = pygame.time.Clock()
-        self.__direction = "up"
+        self.__direction = ""
 
     def event_listener(self):
         for event in pygame.event.get():
@@ -37,29 +39,32 @@ class Game:
                 global running
                 running = False
             if event.type == pygame.KEYDOWN and event.key in dict_keys_unkeys and self.__event:
-                if old_direction != dict_keys_unkeys[event.key][1]:
-                    self.__event = False
-                    self.__direction = dict_keys_unkeys[event.key][0]
+                if self.__direction != '' or (event.key != pygame.K_s and event.key != pygame.K_DOWN):
+                    if old_direction != dict_keys_unkeys[event.key][1]:
+                        self.__event = False
+                        self.__direction = dict_keys_unkeys[event.key][0]
         self.__event = True
         self.__snake.move(self.__direction)
         self.__check_for_food()
         screen.blit(self.__sur, (0, 0))
         self.__snake.draw_snake(self.__direction)
         global game_over
-        game_over = self.__snake.is_collision()
-        self.__food.place_food()
+        game_over = self.__snake.is_collision(self.__tile_map.tile_coordinates)
+        for food in self.__food:
+            food.place_food(self.__tile_map.tile_coordinates)
         self.clock.tick(self.__snake.speed)
         pygame.display.update()
         return game_over
 
     def __check_for_food(self):
-        if self.__snake.get_place_head() == self.__food.get_food_point():
-            self.__food.food = False
-            self.__score += 1
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound('resources/sounds/mixkit-game-ball-tap-2073.wav'))
-            pygame.display.set_caption(f"Snake game Score : {self.__score}")
-            self.__snake.speed = 8 + self.__score // 8
-            self.__snake.ate()
+        for food in self.__food:
+            if self.__snake.get_place_head() == food.get_food_point():
+                food.food = False
+                self.__score += 1
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound('resources/sounds/mixkit-game-ball-tap-2073.wav'))
+                pygame.display.set_caption(f"Snake game Score : {self.__score}")
+                self.__snake.speed = 8 + self.__score // 8
+                self.__snake.ate()
 
     def game_over(self):
         pygame.mixer.Channel(0).play(
@@ -82,6 +87,8 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_p:
+                        self.__sur = self.__tile_map.generate_tile_map(self.__sur)
+                        screen.blit(self.__sur, (0, 0))
                         return True
                     elif event.key == pygame.K_e:
                         return False
@@ -89,3 +96,16 @@ class Game:
     def game_menu(self):
         pass
 
+    def new_game(self):
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-game-level-music-689.wav'), -1)
+        self._sur = self.__tile_map.generate_tile_map(self.__sur)
+        screen.blit(self.__sur, (0, 0))
+        self.__snake = Snake()
+        self.__food = [Food(), Food(), Food()]
+        for food in self.__food:
+            food.place_food(self.__tile_map.tile_coordinates)
+        self.__score = 0
+        self.__event = True
+        self.clock = pygame.time.Clock()
+        self.__direction = ""
+        pygame.display.update()

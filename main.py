@@ -1,7 +1,3 @@
-import time
-
-import pygame
-
 from game import Game
 from config import *
 
@@ -19,6 +15,5 @@ if __name__ == '__main__':
                 running = False
                 break
             else:
-                game = Game()
-                pygame.display.update()
+                game.new_game()
     pygame.quit()
