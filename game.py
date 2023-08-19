@@ -22,7 +22,6 @@ class Game:
         pygame.mixer.music.load('resources/sounds/laxity-crosswords-by-seraphic-music.mp3')
         pygame.mixer.music.load('resources/sounds/mixkit-game-ball-tap-2073.wav')
         pygame.mixer.music.load('resources/sounds/mixkit-player-losing-or-failing-2042.wav')
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-game-level-music-689.wav'), -1)
         self.__tile_map = TileMap()
         self.__tile_map.read_csv('resources/level_design/snakeLevel.csv')
         self.__sur = pygame.Surface((width, height))
@@ -41,6 +40,7 @@ class Game:
         for event in pygame.event.get():
             old_direction = self.__direction
             if event.type == pygame.QUIT:
+                global running
                 running = False
                 pygame.quit()
                 sys.exit()
@@ -129,10 +129,10 @@ class Game:
         pygame.display.set_caption('Menu')
         menu_running = True
         screen.blit(menu_image, (0, 0))
-        font = pygame.font.Font('resources/fonts/8-BIT WONDER.TTF', 30)
+        font = pygame.font.Font('resources/fonts/8-BIT WONDER.TTF', 17)
         score = self.__get_best_score()
-        best_score = font.render(f'YOUR BEST SCORE {score}', True, pygame.Color('green'))
-        screen.blit(best_score, (width / 2 - best_score.get_width()/2, 160))
+        best_score = font.render(f'YOUR BEST SCORE {score}', True, pygame.Color('blue'))
+        screen.blit(best_score, (best_score.get_width()/2 - 120, 30))
         play_button = Button((width / 2, height / 2), 'PLAY',
                              pygame.font.Font('resources/fonts/8-BIT WONDER.TTF', 32),
                              pygame.Color('green'), screen)
@@ -145,12 +145,12 @@ class Game:
                 button.change_color(mouse_pos)
                 button.update()
                 pygame.display.update()
-
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if play_button.check_input(mouse_pos):
                         pygame.display.set_caption('Snake game')
                         menu_running = False
+                        pygame.mixer.Channel(0).play(pygame.mixer.Sound('resources/sounds/mixkit-game-level-music-689.wav'), -1)
                         break
                     if quit_button.check_input(mouse_pos):
                         pygame.quit()

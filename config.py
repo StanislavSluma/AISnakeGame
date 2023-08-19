@@ -15,7 +15,7 @@ pygame.display.set_caption("Snake game Score : 0")
 background = pygame.image.load('resources/level_design/snakeBg.png')
 
 apple = pygame.image.load('resources/snake/apple.png')
-mushroom = pygame.image.load('resources/snake/mushroom.png')
+orange = pygame.image.load('resources/snake/orange.png')
 
 snake_head = pygame.image.load('resources/snake/snake_head.png')
 snake_body = pygame.image.load('resources/snake/snake_body.png')

@@ -78,10 +78,11 @@ class Snake:
             self.__speed += delta / 2
         else:
             self.__speed += delta
-        if type_food == 'cherry':
+        if type_food == 'orange':
             if self.__in_bush > 0:
                 self.__in_bush -= 1
-            if len(self.__snake_body) > 2:
+            if len(self.__snake_body) > 3:
+                self.__snake_body.pop()
                 self.__snake_body.pop()
         else:
             self.__snake_body.append(self.__snake_body[-1])

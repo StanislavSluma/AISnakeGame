@@ -1,8 +1,6 @@
 import random
 
-import pygame.image
-
-from config import tile_size, screen, width, height, apple, mushroom
+from config import tile_size, screen, width, height, apple, orange
 
 
 class Food:
@@ -34,13 +32,11 @@ class Food:
             self.__food = False
         if self.__timer > 0:
             self.__timer -= 1
-            print(self.__timer)
         if not self.__food:
             self.__timer = 0
             if random.randint(1, 8) == 1:
-                self.__type_food = 'mushroom'
+                self.__type_food = 'orange'
                 self.__timer = 65
-                print(self.__timer)
             else:
                 self.__type_food = 'apple'
             self.__food_x = random.randint(0, width / tile_size - 1)
@@ -56,4 +52,4 @@ class Food:
         if self.__type_food == 'apple':
             screen.blit(apple, (self.__food_x * tile_size, self.__food_y * tile_size))
         else:
-            screen.blit(mushroom, (self.__food_x * tile_size, self.__food_y * tile_size))
+            screen.blit(orange, (self.__food_x * tile_size, self.__food_y * tile_size))
