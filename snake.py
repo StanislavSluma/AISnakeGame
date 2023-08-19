@@ -12,11 +12,16 @@ class Snake:
             [width / 2, height / 2 + 8, 0], [width / 2, height / 2 + 24, 0], [width / 2, height / 2 + 40, 0]
         ]
         self.__speed = 8
+        self.__in_bush = 0
         self.draw_snake('')
 
     @property
     def speed(self):
         return self.__speed
+
+    @property
+    def snake_body(self):
+        return self.__snake_body
 
     @speed.setter
     def speed(self, speed):
@@ -48,19 +53,46 @@ class Snake:
             else:
                 self.__x += tile_size
 
-    def is_collision(self, tiles):
+    def is_in_bush(self, bush_coord):
+        head = self.get_place_head()
+        if head in bush_coord:
+            if self.__in_bush == 0:
+                self.__speed /= 2
+            self.__in_bush = len(self.__snake_body)
+        if self.__in_bush == 1:
+            self.__speed *= 2
+        if self.__in_bush > 0:
+            self.__in_bush -= 1
+
+    def is_collision(self, rock_coord):
         head = self.get_place_head()
         for body in self.__snake_body[1:]:
             if head == (body[0], body[1]):
                 return True
-        if head in tiles:
+        if head in rock_coord:
             return True
         return False
 
-    def ate(self):
-        self.__snake_body.append(self.__snake_body[-1])
+    def ate(self, delta, type_food):
+        if self.__in_bush > 0:
+            self.__speed += delta / 2
+        else:
+            self.__speed += delta
+        if type_food == 'cherry':
+            if self.__in_bush > 0:
+                self.__in_bush -= 1
+            if len(self.__snake_body) > 2:
+                self.__snake_body.pop()
+        else:
+            self.__snake_body.append(self.__snake_body[-1])
+            if self.__in_bush > 0:
+                self.__in_bush += 1
 
     def draw_snake(self, direction):
+        if self.__in_bush == 0:
+            color = (255, 200, 50)
+        else:
+            color = (255, 0, 0)
         if direction != '':
             new_body = list.copy(self.__snake_body)
             rotate = 0
@@ -85,16 +117,16 @@ class Snake:
             # left rotate
             if corner == 90 or corner == -270:
                 body_rect = pygame.Rect(body[0], body[1], tile_size, tile_size)
-                pygame.draw.rect(screen, (255, 200, 50), body_rect, 2, 10)
+                pygame.draw.rect(screen, color, body_rect, 2, 10)
                 screen.blit(pygame.transform.rotate(snake_left, body[2]), body_rect)
             # right rotate
             elif corner == -90 or corner == 270:
                 body_rect = pygame.Rect(body[0], body[1], tile_size, tile_size)
-                pygame.draw.rect(screen, (255, 200, 50), body_rect, 2, 10)
+                pygame.draw.rect(screen, color, body_rect, 2, 10)
                 screen.blit(pygame.transform.rotate(snake_right, body[2]), body_rect)
             else:
                 body_rect = pygame.Rect(body[0], body[1], tile_size, tile_size)
-                pygame.draw.rect(screen, (255, 200, 50), body_rect, 2, 10)
+                pygame.draw.rect(screen, color, body_rect, 2, 10)
                 screen.blit(pygame.transform.rotate(snake_body, body[2]), body_rect)
             i += 1
         self.__snake_body[-1][2] = self.__snake_body[-2][2]

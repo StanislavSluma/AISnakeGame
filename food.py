@@ -2,7 +2,7 @@ import random
 
 import pygame.image
 
-from config import tile_size, screen, width, height
+from config import tile_size, screen, width, height, apple, mushroom
 
 
 class Food:
@@ -10,6 +10,8 @@ class Food:
     def __init__(self):
         self.__food_x = 0
         self.__food_y = 0
+        self.__type_food = 'apple'
+        self.__timer = 0
         self.__food = False
 
     @property
@@ -17,21 +19,41 @@ class Food:
         return self.__food
 
     @food.setter
-    def food(self, value):
-        self.__food = value
+    def food(self, food):
+        self.__food = food
+
+    @property
+    def type_food(self):
+        return self.__type_food
 
     def get_food_point(self):
         return self.__food_x * tile_size, self.__food_y * tile_size
 
-    def place_food(self, tiles):
+    def place_food(self, tiles, all_snake):
+        if self.__timer == 1:
+            self.__food = False
+        if self.__timer > 0:
+            self.__timer -= 1
+            print(self.__timer)
         if not self.__food:
+            self.__timer = 0
+            if random.randint(1, 8) == 1:
+                self.__type_food = 'mushroom'
+                self.__timer = 65
+                print(self.__timer)
+            else:
+                self.__type_food = 'apple'
             self.__food_x = random.randint(0, width / tile_size - 1)
             self.__food_y = random.randint(0, height / tile_size - 1)
-            while (self.__food_x * tile_size, self.__food_y * tile_size) in tiles:
-                print('papa')
+            in_tile = (self.__food_x * tile_size, self.__food_y * tile_size) in tiles
+            in_snake = [self.__food_x * tile_size, self.__food_y * tile_size] in all_snake
+            while in_snake or in_tile:
                 self.__food_x = random.randint(0, width / tile_size - 1)
                 self.__food_y = random.randint(0, height / tile_size - 1)
+                in_tile = (self.__food_x * tile_size, self.__food_y * tile_size) in tiles
+                in_snake = [self.__food_x * tile_size, self.__food_y * tile_size] in all_snake
             self.__food = True
-        apple = pygame.image.load('resources/snake/apple.png')
-        fruit_rect = pygame.Rect(int(self.__food_x * tile_size), int(self.__food_y * tile_size), tile_size, tile_size)
-        screen.blit(apple, fruit_rect)
+        if self.__type_food == 'apple':
+            screen.blit(apple, (self.__food_x * tile_size, self.__food_y * tile_size))
+        else:
+            screen.blit(mushroom, (self.__food_x * tile_size, self.__food_y * tile_size))

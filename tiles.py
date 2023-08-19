@@ -13,14 +13,20 @@ class TileMap:
         self.__y = 0
         self.__tiles = tiles
         self.__tile_map = []
-        self.__tile_coordinates = []
+        self.__rock_coordinates = []
+        self.__bush_coordinates = []
 
     @property
-    def tile_coordinates(self):
-        return self.__tile_coordinates
+    def rock_coordinates(self):
+        return self.__rock_coordinates
+
+    @property
+    def bush_coordinates(self):
+        return self.__bush_coordinates
 
     def generate_tile_map(self, surface):
-        self.__tile_coordinates.clear()
+        self.__rock_coordinates.clear()
+        self.__bush_coordinates.clear()
         surface.blit(background, (0, 0))
         generate = 100
         not_gen = [(width / 2, height / 2 + 8), (width / 2, height / 2 + 24), (width / 2, height / 2 + 40),
@@ -29,18 +35,24 @@ class TileMap:
         while generate > -1:
             self.__x = random.randint(0, width / tile_size - 1)
             self.__y = random.randint(0, height / tile_size - 1)
-            if (self.__x * tile_size, self.__y * tile_size) not in not_gen and (self.__x * tile_size, self.__y * tile_size) not in self.__tile_coordinates:
+            not_in_rock = (self.__x * tile_size, self.__y * tile_size) not in self.__rock_coordinates
+            not_in_bush = (self.__x * tile_size, self.__y * tile_size) not in self.__bush_coordinates
+            not_in_begin = (self.__x * tile_size, self.__y * tile_size) not in not_gen
+            if not_in_rock and not_in_bush and not_in_begin:
                 name = random.randint(1, 4)
+                num = '305'
                 if name == 1:
                     num = '305'
                 else:
                     if name == 2:
                         num = '285'
-                    elif name == 3:
-                        num = '326'
-                    elif name == 4:
-                        num = '329'
-                    self.__tile_coordinates.append((self.__x * tile_size, self.__y * tile_size))
+                        self.__bush_coordinates.append((self.__x * tile_size, self.__y * tile_size))
+                    else:
+                        if name == 3:
+                            num = '326'
+                        elif name == 4:
+                            num = '329'
+                        self.__rock_coordinates.append((self.__x * tile_size, self.__y * tile_size))
                 image = self.__tiles[num]
                 surface.blit(image, (self.__x * tile_size, self.__y * tile_size))
                 generate -= 1
@@ -51,7 +63,6 @@ class TileMap:
             reader = csv.reader(file, delimiter=',')
             for row in reader:
                 self.__tile_map.append(list(row))
-        print(self.__tile_map)
 
     def draw_map(self, surface):
         surface.blit(background, (0, 0))
@@ -63,7 +74,10 @@ class TileMap:
                 if tile != '-1':
                     image = self.__tiles[tile]
                     if tile != '305':
-                        self.__tile_coordinates.append((self.__x * tile_size, self.__y * tile_size))
+                        if tile == '329' or tile == '326':
+                            self.__rock_coordinates.append((self.__x * tile_size, self.__y * tile_size))
+                        elif tile == '285':
+                            self.__bush_coordinates.append((self.__x * tile_size, self.__y * tile_size))
                     surface.blit(image, (self.__x * tile_size, self.__y * tile_size))
         pygame.display.update()
         return surface
