@@ -123,7 +123,7 @@ class Game:
         pygame.display.update()
 
     def game_menu(self):
-        pygame.mixer.Channel(0).play(
+        pygame.mixer.Channel(4).play(
             pygame.mixer.Sound('resources/sounds/laxity-crosswords-by-seraphic-music.mp3'), -1
         )
         pygame.display.set_caption('Menu')
@@ -151,6 +151,7 @@ class Game:
                     if play_button.check_input(mouse_pos):
                         pygame.display.set_caption('Snake game')
                         menu_running = False
+                        pygame.mixer.Channel(4).pause()
                         break
                     if quit_button.check_input(mouse_pos):
                         pygame.quit()
