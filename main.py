@@ -1,9 +1,12 @@
-from game import Game
+import sys
+
+from game import Game, Button
 from config import *
 
 
 if __name__ == '__main__':
     game = Game()
+    game.game_menu()
     pygame.display.update()
     global running
     global game_over
@@ -17,3 +20,4 @@ if __name__ == '__main__':
             else:
                 game.new_game()
     pygame.quit()
+    sys.exit()
