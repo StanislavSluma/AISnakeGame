@@ -19,5 +19,4 @@ if __name__ == '__main__':
                 break
             else:
                 game.new_game()
-    pygame.quit()
     sys.exit()

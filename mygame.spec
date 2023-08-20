@@ -1,0 +1,67 @@
+# -*- mode: python ; coding: utf-8 -*-
+
+
+block_cipher = None
+
+
+a = Analysis(
+    ['main.py'],
+    pathex=[],
+    binaries=[],
+    datas=[('resources/fonts/8-BIT WONDER.TTF','resources/fonts'),
+    ('resources/level_design/tiles/285.png', 'resources/level_design/tiles'),
+    ('resources/level_design/tiles/305.png', 'resources/level_design/tiles'),
+    ('resources/level_design/tiles/326.png', 'resources/level_design/tiles'),
+    ('resources/level_design/tiles/329.png', 'resources/level_design/tiles'),
+    ('resources/level_design/GRASS+.png', 'resources/level_design'),
+    ('resources/level_design/GRASS+.tsx', 'resources/level_design'),
+    ('resources/level_design/snakeBG.png', 'resources/level_design'),
+    ('resources/level_design/snakeLevel.csv', 'resources/level_design'),
+    ('resources/sounds/laxity-crosswords-by-seraphic-music.mp3','resources/sounds'),
+    ('resources/sounds/mixkit-game-ball-tap-2073.wav', 'resources/sounds'),
+    ('resources/sounds/mixkit-game-level-music-689.wav','resources/sounds'),
+    ('resources/sounds/mixkit-player-losing-or-failing-2042.wav','resources/sounds'),
+    ('resources/menu_image.jpg','resources'),
+    ('resources/score.txt.bak','resources'),
+    ('resources/score.txt.dat','resources'),
+    ('resources/score.txt.dir','resources'),
+    ('resources/snake/apple.png','resources/snake'),
+    ('resources/snake/orange.png','resources/snake'),
+    ('resources/snake/snake_body.png','resources/snake'),
+    ('resources/snake/snake_corner.png','resources/snake'),
+    ('resources/snake/snake_corner_left.png','resources/snake'),
+    ('resources/snake/snake_head.png','resources/snake'),
+    ('resources/snake/snake_tail.png','resources/snake')],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='Snake',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=False,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+)
