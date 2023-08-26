@@ -11,7 +11,6 @@ class Button:
         self.__text_color = text_color
         self.__rendered_text = self.__font.render(text, True, pygame.Color('white'))
         self.__text_rect = self.__rendered_text.get_rect(center=(self.__x, self.__y))
-
         self.__width = self.__rendered_text.get_width()
         self.__height = self.__rendered_text.get_height()
 
