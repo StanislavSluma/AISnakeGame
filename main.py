@@ -6,12 +6,15 @@ from config import *
 
 if __name__ == '__main__':
     game = Game()
-    game.game_menu()
+    res = game.game_menu()
     pygame.display.update()
     global running
     global game_over
     while running:
-        is_over = game.event_listener()
+        if res == 'game':
+            is_over = game.event_listener()
+        else:
+            is_over = game.machine_learning()
         if is_over:
             should_continue = game.game_over()
             if not should_continue:

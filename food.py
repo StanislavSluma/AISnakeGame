@@ -25,7 +25,7 @@ class Food:
         return self.__type_food
 
     def get_food_point(self):
-        return self.__food_x * tile_size, self.__food_y * tile_size
+        return (self.__food_x * tile_size, self.__food_y * tile_size)
 
     def place_food(self, tiles, all_snake):
         if self.__timer == 1:

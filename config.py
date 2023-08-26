@@ -18,6 +18,9 @@ dict_keys_unkeys = {pygame.K_w: ["up", "down"], pygame.K_UP: ["up", "down"], pyg
                     pygame.K_DOWN: ["down", "up"], pygame.K_a: ["left", "right"], pygame.K_LEFT: ["left", "right"],
                     pygame.K_d: ["right", "left"], pygame.K_RIGHT: ["right", "left"]}
 
+direction_index = {0: 'up', 1: 'left', 2: 'down', 3: 'right'}
+index_direction = {'up': 0, 'left': 1, 'down': 2, 'right': 3}
+
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake game Score : 0")
 
