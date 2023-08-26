@@ -29,7 +29,7 @@ class Game:
         self.__sur = pygame.Surface((width, height))
         self._sur = self.__tile_map.draw_map(self.__sur)
         self.__snake = Snake()
-        self.__bot_snake = SnakeBot()
+        self.__bot_snake = SnakeBot(width / 2, height / 2 + 8)
         self.__food = [Food()]
         for food in self.__food:
             food.place_food(self.__tile_map.rock_coordinates, self.__snake.snake_body)
@@ -75,16 +75,20 @@ class Game:
         block_coordinates = self.__tile_map.rock_coordinates + snake_coordinates
 
         bot_direction = self.__bot_snake.decide_direction(food_coordinates, block_coordinates, self.__event)
+        self.__direction = bot_direction
+
+        '''
         if self.__event == True:
             print(f'Bot Direction: {bot_direction}')
             self.__event = False
-
+        '''
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 self.__direction = dict_keys_unkeys[event.key][0]
                 self.__event = True
+        
+        # self.__bot_snake.learning(bot_direction, self.__direction)
 
-        self.__bot_snake.learning(bot_direction, self.__direction)
         self.__bot_snake.move(self.__direction)
         self.__check_for_food_ml()
         screen.blit(self.__sur, (0, 0))
@@ -94,7 +98,7 @@ class Game:
         self.__bot_snake.is_in_bush(self.__tile_map.bush_coordinates)
         for food in self.__food:
             food.place_food(self.__tile_map.rock_coordinates, self.__bot_snake.snake_body)
-        self.clock.tick(self.__bot_snake.speed)
+        self.clock.tick(100) # self.__bot_snake.speed
         pygame.display.update()
         self.__direction = ""
         return game_over
@@ -163,8 +167,8 @@ class Game:
         self._sur = self.__tile_map.generate_tile_map(self.__sur)
         screen.blit(self.__sur, (0, 0))
         self.__snake = Snake()
-        self.__bot_snake = SnakeBot()
-        self.__food = [Food()]
+        self.__bot_snake = SnakeBot(width / 2, height / 2 + 8)
+        self.__food = [Food(), Food(), Food(), Food(), Food()]
         for food in self.__food:
             food.place_food(self.__tile_map.rock_coordinates, self.__snake.snake_body)
         self.__score = 0

@@ -3,8 +3,13 @@ from config import tile_size, width, height, direction_index, index_direction, o
 
 
 class SnakeBot(Snake):
-    def __init__(self):
+    def __init__(self, x, y):
         super().__init__()
+        self._x = x
+        self._y = y
+        self._snake_body = [
+            [x, y, 0], [x, y + 16, 0], [x, y + 32, 0]
+        ]
         self.__new_food_coordinates = []
         self.__new_block_coordinates = []
         self.__count = 0
@@ -29,10 +34,10 @@ class SnakeBot(Snake):
             self.__food_map.append(temp_list)
             i += 1
         self.__read_brain_map()
-        self.__block_map[31][15][0] = -9999
-        self.__block_map[31][17][2] = -9999
-        self.__block_map[30][16][1] = -9999
-        self.__block_map[32][16][3] = -9999
+        self.__block_map[31][15][0] = -999
+        self.__block_map[31][17][2] = -999
+        self.__block_map[30][16][1] = -999
+        self.__block_map[32][16][3] = -999
         # self.__save_brain_map()
 
     def __align(self, food_coordinates, block_coordinates):
@@ -65,10 +70,12 @@ class SnakeBot(Snake):
             directions[2] += self.__block_map[block_point[0]][block_point[1]][2]
             directions[3] += self.__block_map[block_point[0]][block_point[1]][3]
         if event == True:
+
             print(f'up: => {directions[0]}')
             print(f'left: => {directions[1]}')
             print(f'down: => {directions[2]}')
             print(f'right: => {directions[3]}')
+
         return direction_index[directions.index(max(directions))]
 
     def learning(self, bot_direction, my_direction):
