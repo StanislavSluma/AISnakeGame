@@ -44,12 +44,12 @@ class Food:
             in_tile = (self.__food_x * tile_size, self.__food_y * tile_size) in tiles
             in_snake = False
             for body in all_snake:
-                in_snake = (((self.__food_x * tile_size, self.__food_y * tile_size) == (body[0], body[1])) or in_snake)
+                in_snake = (((self.__food_x * tile_size, self.__food_y * tile_size) == body) or in_snake)
             while in_snake or in_tile:
                 self.__food_x = random.randint(0, width / tile_size - 1)
                 self.__food_y = random.randint(0, height / tile_size - 1)
                 in_tile = (self.__food_x * tile_size, self.__food_y * tile_size) in tiles
-                in_snake = [self.__food_x * tile_size, self.__food_y * tile_size] in all_snake
+                in_snake = (self.__food_x * tile_size, self.__food_y * tile_size) in all_snake
             self.__food = True
         if self.__type_food == 'apple':
             screen.blit(apple, (self.__food_x * tile_size, self.__food_y * tile_size))

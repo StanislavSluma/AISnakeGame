@@ -34,11 +34,20 @@ class SnakeBot(Snake):
             self.__food_map.append(temp_list)
             i += 1
         self.__read_brain_map()
+        '''
+        i = 0
+        while i < 62:
+            j = 0
+            while j < 31:
+                self.__block_map[i][j] = [0, 0, 0, 0]
+                j += 1
+            i += 1
         self.__block_map[31][15][0] = -999
         self.__block_map[31][17][2] = -999
         self.__block_map[30][16][1] = -999
         self.__block_map[32][16][3] = -999
-        # self.__save_brain_map()
+        self.__save_brain_map()
+        '''
 
     def __align(self, food_coordinates, block_coordinates):
         self.__new_food_coordinates = []
@@ -56,7 +65,7 @@ class SnakeBot(Snake):
             block_y = int(temp % (height / tile_size))
             self.__new_block_coordinates.append([block_x, block_y])
 
-    def decide_direction(self, food_coordinates, block_coordinates, event):
+    def decide_direction(self, food_coordinates, block_coordinates):
         directions = [0, 0, 0, 0]
         self.__align(food_coordinates, block_coordinates)
         for food_point in self.__new_food_coordinates:
@@ -69,13 +78,6 @@ class SnakeBot(Snake):
             directions[1] += self.__block_map[block_point[0]][block_point[1]][1]
             directions[2] += self.__block_map[block_point[0]][block_point[1]][2]
             directions[3] += self.__block_map[block_point[0]][block_point[1]][3]
-        if event == True:
-
-            print(f'up: => {directions[0]}')
-            print(f'left: => {directions[1]}')
-            print(f'down: => {directions[2]}')
-            print(f'right: => {directions[3]}')
-
         return direction_index[directions.index(max(directions))]
 
     def learning(self, bot_direction, my_direction):
@@ -86,17 +88,16 @@ class SnakeBot(Snake):
         if my_direction != bot_direction:
             print(f"My Direction: {my_direction}")
             for food_point in self.__new_food_coordinates:
-                self.__food_map[food_point[0]][food_point[1]][index_direction[my_direction]] += 5
-                self.__food_map[food_point[0]][food_point[1]][index_direction[bot_direction]] -= 5
+                self.__food_map[food_point[0]][food_point[1]][index_direction[my_direction]] += 3
+                self.__food_map[food_point[0]][food_point[1]][index_direction[bot_direction]] -= 3
             for block_point in self.__new_block_coordinates:
-                self.__block_map[block_point[0]][block_point[1]][index_direction[my_direction]] += 1
                 self.__block_map[block_point[0]][block_point[1]][index_direction[bot_direction]] -= 1
             print("Save in FILE")
             self.__save_brain_map()
         else:
             print('CooL!')
             for food_point in self.__new_food_coordinates:
-                self.__food_map[food_point[0]][food_point[1]][index_direction[bot_direction]] += 3
+                self.__food_map[food_point[0]][food_point[1]][index_direction[bot_direction]] += 1
 
     def __save_brain_map(self):
         file = open('bot_map.txt', 'w')
