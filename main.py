@@ -13,8 +13,10 @@ if __name__ == '__main__':
     while running:
         if res == 'game':
             is_over = game.event_listener()
+        elif res == 'bot':
+            is_over = game.with_bot()
         else:
-            is_over = game.machine_learning()
+            sys.exit()
         if is_over:
             should_continue = game.game_over()
             if not should_continue:
