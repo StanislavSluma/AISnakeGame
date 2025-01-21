@@ -25,7 +25,7 @@ class Food:
         return self.__type_food
 
     def get_food_point(self):
-        return (self.__food_x * tile_size, self.__food_y * tile_size)
+        return self.__food_x * tile_size, self.__food_y * tile_size
 
     def place_food(self, tiles, all_snake):
         if self.__timer == 1:
@@ -39,15 +39,15 @@ class Food:
                 self.__timer = 65
             else:
                 self.__type_food = 'apple'
-            self.__food_x = random.randint(0, width / tile_size - 1)
-            self.__food_y = random.randint(0, height / tile_size - 1)
+            self.__food_x = random.randint(0, int(width / tile_size - 1))
+            self.__food_y = random.randint(0, int(height / tile_size - 1))
             in_tile = (self.__food_x * tile_size, self.__food_y * tile_size) in tiles
             in_snake = False
             for body in all_snake:
                 in_snake = (((self.__food_x * tile_size, self.__food_y * tile_size) == body) or in_snake)
             while in_snake or in_tile:
-                self.__food_x = random.randint(0, width / tile_size - 1)
-                self.__food_y = random.randint(0, height / tile_size - 1)
+                self.__food_x = random.randint(0, width // tile_size - 1)
+                self.__food_y = random.randint(0, height // tile_size - 1)
                 in_tile = (self.__food_x * tile_size, self.__food_y * tile_size) in tiles
                 in_snake = (self.__food_x * tile_size, self.__food_y * tile_size) in all_snake
             self.__food = True

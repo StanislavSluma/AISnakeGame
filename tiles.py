@@ -33,8 +33,8 @@ class TileMap:
                    (width / 2 - tile_size, height / 2 - 8), (width / 2, height / 2 - 8),
                    (width / 2 + tile_size, height / 2 - 8)]
         while generate > -1:
-            self.__x = random.randint(0, width / tile_size - 1)
-            self.__y = random.randint(0, height / tile_size - 1)
+            self.__x = random.randint(0, int(width / tile_size - 1))
+            self.__y = random.randint(0, int(height / tile_size - 1))
             not_in_rock = (self.__x * tile_size, self.__y * tile_size) not in self.__rock_coordinates
             not_in_bush = (self.__x * tile_size, self.__y * tile_size) not in self.__bush_coordinates
             not_in_begin = (self.__x * tile_size, self.__y * tile_size) not in not_gen

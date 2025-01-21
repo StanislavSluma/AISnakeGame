@@ -13,6 +13,7 @@ from config import screen, dict_keys_unkeys, width, height, menu_image, resource
 from food import Food
 from snake import Snake
 from snake_bot import SnakeBot
+from agent import Agent
 from tiles import TileMap
 from button import Button
 
@@ -31,11 +32,14 @@ class Game:
         self._sur = self.__tile_map.draw_map(self.__sur)
         self.__snake = Snake()
         self.__bot_snake = SnakeBot(width / 2 + 32, height / 2 + 8)
-        self.__food = [Food(), Food(), Food()]
+        self.__agent = Agent(width // 2, height // 2 + 8)
+        self.__food_amount = 10
+        self.__food = [Food() for _ in range(self.__food_amount)]
         for food in self.__food:
             food.place_food(self.__tile_map.rock_coordinates, self.__snake.snake_body)
         self.__score = 0
         self.__bot_score = 0
+        self.__agent_score = 0
         self.__event = True
         self.clock = pygame.time.Clock()
         self.__direction = ""
@@ -78,6 +82,81 @@ class Game:
         self.clock.tick(8)
         pygame.display.update()
         return game_over
+
+    def with_agent(self):
+        for event in pygame.event.get():
+            old_direction = self.__direction
+            if event.type == pygame.QUIT:
+                global running
+                running = False
+                sys.exit()
+            if event.type == pygame.KEYDOWN and event.key in dict_keys_unkeys and self.__event:
+                if self.__direction != '' or (event.key != pygame.K_s and event.key != pygame.K_DOWN):
+                    if old_direction != dict_keys_unkeys[event.key][1]:
+                        self.__event = False
+                        self.__direction = dict_keys_unkeys[event.key][0]
+        self.__event = True
+
+        food_coordinates, block_coordinates = self.__bot_map()
+        block_coordinates += self.__snake.snake_body_xy()
+        bot_direction = self.__bot_snake.decide_direction(food_coordinates, block_coordinates)
+
+        self.__snake.move(self.__direction)
+        self.__bot_snake.move(bot_direction)
+        self.__check_for_food()
+        self.__check_for_food_ml()
+        screen.blit(self.__sur, (0, 0))
+        self.__snake.draw_snake(self.__direction)
+        self.__bot_snake.draw_snake(bot_direction)
+
+        game_over = self.__snake.is_collision(self.__tile_map.rock_coordinates + self.__bot_snake.snake_body_xy())
+        if self.__bot_snake.is_collision(self.__tile_map.rock_coordinates + self.__snake.snake_body_xy()):
+            self.__turn_to_rocks()
+
+        self.__snake.is_in_bush(self.__tile_map.bush_coordinates)
+        self.__bot_snake.is_in_bush(self.__tile_map.bush_coordinates)
+        for food in self.__food:
+            food.place_food(self.__tile_map.rock_coordinates, self.__snake.snake_body_xy() + self.__bot_snake.snake_body_xy())
+        self.clock.tick(8)
+        pygame.display.update()
+        return game_over
+
+    def agent_training(self, total_reward, step):
+        food_coord, block_coord = self.__agent_map()
+        state = self.__agent.to_state(food_coord, block_coord)
+        agent_direction, action = self.__agent.make_decision(state, 0.05)
+
+        self.__agent.move(agent_direction)
+        is_ate_food = self.__check_for_food_rl()
+        screen.blit(self.__sur, (0, 0))
+        self.__agent.draw_snake(agent_direction)
+        game_over = self.__agent.is_collision(self.__tile_map.rock_coordinates)
+        self.__agent.is_in_bush(self.__tile_map.bush_coordinates)
+        for food in self.__food:
+            food.place_food(self.__tile_map.rock_coordinates, self.__agent.snake_body_xy())
+        # self.clock.tick(self.__agent.speed)
+        pygame.display.update()
+
+        step += 1
+        reward = 0.1
+        if game_over:
+            #reward = -100 / (step ** 1/2)
+            reward = -1
+            step = 1
+            print(f"agent_score: {self.__agent_score}")
+        if is_ate_food:
+            #reward = step ** 1/2
+            reward = 1
+
+        total_reward += reward
+        food_coord, block_coord = self.__agent_map()
+        next_state = self.__agent.to_state(food_coord, block_coord)
+        self.__agent.update(state, next_state, action, reward, gamma=1.)
+
+        return game_over, total_reward, step
+
+    def save_agent(self, episode):
+        self.__agent.save(episode)
 
     def event_listener(self):
         for event in pygame.event.get():
@@ -165,6 +244,25 @@ class Game:
                 else:
                     self.__bot_snake.ate(0, food.type_food)
 
+    def __check_for_food_rl(self):
+        head = self.__agent.get_place_head()
+        for food in self.__food:
+            food_xy = food.get_food_point()
+            if head[0] == food_xy[0] and head[1] == food_xy[1]:
+                food.food = False
+                if food.type_food == 'apple':
+                    self.__agent_score += 1
+                else:
+                    self.__agent_score += 3
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound(resource_path(os.path.join('resources/sounds', 'mixkit-game-ball-tap-2073.wav'))))
+                pygame.display.set_caption(f"Snake game Your Score : {self.__score}    Bot Score : {self.__agent_score}")
+                if self.__score % 8 == 0:
+                    self.__agent.ate(1, food.type_food)
+                else:
+                    self.__agent.ate(0, food.type_food)
+                return True
+        return False
+
     def __bot_map(self):
         food_coordinates = []
         for food in self.__food:
@@ -173,6 +271,13 @@ class Game:
         snake_coordinates = self.__bot_snake.snake_body_xy()
         snake_coordinates.pop(0)
         block_coordinates = self.__tile_map.rock_coordinates + snake_coordinates
+        return food_coordinates, block_coordinates
+
+    def __agent_map(self):
+        food_coordinates = []
+        for food in self.__food:
+            food_coordinates.append(food.get_food_point())
+        block_coordinates = self.__tile_map.rock_coordinates.copy()
         return food_coordinates, block_coordinates
 
     def __turn_to_rocks(self):
@@ -226,11 +331,15 @@ class Game:
         screen.blit(self.__sur, (0, 0))
         self.__snake = Snake()
         self.__bot_snake = SnakeBot(width / 2 + 32, height / 2 + 8)
-        self.__food = [Food(), Food(), Food()]
+        dqn = self.__agent.get_dqn()
+        self.__agent = Agent(width // 2, height // 2 + 8)
+        self.__agent.set_dqn(dqn)
+        self.__food = [Food() for _ in range(self.__food_amount)]
         for food in self.__food:
             food.place_food(self.__tile_map.rock_coordinates, self.__snake.snake_body)
         self.__score = 0
         self.__bot_score = 0
+        self.__agent_score = 0
         self.__event = True
         self.clock = pygame.time.Clock()
         self.__direction = ""
@@ -257,14 +366,22 @@ class Game:
         bot_button = Button((width / 2, height / 2 - 50),  'With Bot',
                              pygame.font.Font(resource_path(os.path.join('resources/fonts', '8-BIT WONDER.TTF')), 32),
                              pygame.Color('blue'), screen)
+        agent_button = Button((width / 2, height / 2 - 100),  'With Agent',
+                             pygame.font.Font(resource_path(os.path.join('resources/fonts', '8-BIT WONDER.TTF')), 32),
+                             pygame.Color('blue'), screen)
         while menu_running:
             mouse_pos = pygame.mouse.get_pos()
-            for button in [play_button, quit_button, bot_button]:
+            for button in [play_button, quit_button, bot_button, agent_button]:
                 button.change_color(mouse_pos)
                 button.update()
                 pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if agent_button.check_input(mouse_pos):
+                        pygame.display.set_caption('Snake game')
+                        pygame.mixer.Channel(0).play(pygame.mixer.Sound(
+                            resource_path(os.path.join('resources/sounds', 'mixkit-game-level-music-689.wav'))), -1)
+                        return 'agent'
                     if bot_button.check_input(mouse_pos):
                         pygame.display.set_caption('Snake game')
                         pygame.mixer.Channel(0).play(pygame.mixer.Sound(
